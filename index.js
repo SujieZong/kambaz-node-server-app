@@ -4,14 +4,17 @@ import Lab5 from "./Lab5/index.js";
 import cors from "cors";
 import UserRoutes from "./Kambaz/Users/routes.js";
 import CourseRoutes from "./Kambaz/Courses/routes.js";
+import AssignmentRoutes from "./Kambaz/Assignments/routes.js";
 import "dotenv/config";
 import session from "express-session";
 import ModuleRoutes from "./Kambaz/Modules/routes.js";
 const app = express();
-app.use(cors({
-  credentials: true,
-  origin: process.env.NETLIFY_URL || "http://localhost:5173",
-}));
+app.use(
+  cors({
+    credentials: true,
+    origin: process.env.NETLIFY_URL || "http://localhost:5173",
+  })
+);
 const sessionOptions = {
   secret: process.env.SESSION_SECRET || "kambaz",
   resave: false,
@@ -31,6 +34,7 @@ app.use(express.json());
 UserRoutes(app);
 Hello(app);
 CourseRoutes(app);
+AssignmentRoutes(app);
 Lab5(app);
 ModuleRoutes(app);
 app.listen(process.env.PORT || 4000);
