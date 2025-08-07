@@ -8,17 +8,34 @@ export default function UserRoutes(app) {
     enrollmentsDao.enrollUserInCourse(currentUser._id, newCourse._id);
     res.json(newCourse);
   };
-  const createUser = (req, res) => {
+  const createUser = async (req, res) => {
     const currentUser = req.session["currentUser"];
-    if (!currentUser || currentUser.role !== "FACULTY") {
-      res.status(403).json({ message: "Only faculty can create users" });
+    if (
+      !currentUser ||
+      currentUser.role !== "FACULTY" ||
+      currentUser.role !== "ADMIN"
+    ) {
+      res
+        .status(403)
+        .json({ message: "Only faculty or admin can create users" });
       return;
     }
-    const newUser = dao.createUser(req.body);
+    const newUser = await dao.createUser(req.body);
     res.json(newUser);
   };
 
   const deleteUser = async (req, res) => {
+    const currentUser = req.session["currentUser"];
+    if (
+      !currentUser ||
+      currentUser.role !== "FACULTY" ||
+      currentUser.role !== "ADMIN"
+    ) {
+      res
+        .status(403)
+        .json({ message: "Only faculty or admin can delete users" });
+      return;
+    }
     const status = await dao.deleteUser(req.params.userId);
     res.json(status);
   };
