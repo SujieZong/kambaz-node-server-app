@@ -12,7 +12,7 @@ export default function UserRoutes(app) {
     const currentUser = req.session["currentUser"];
     if (
       !currentUser ||
-      currentUser.role !== "FACULTY" ||
+      currentUser.role !== "FACULTY" &&
       currentUser.role !== "ADMIN"
     ) {
       res
@@ -28,7 +28,7 @@ export default function UserRoutes(app) {
     const currentUser = req.session["currentUser"];
     if (
       !currentUser ||
-      currentUser.role !== "FACULTY" ||
+      currentUser.role !== "FACULTY" &&
       currentUser.role !== "ADMIN"
     ) {
       res
