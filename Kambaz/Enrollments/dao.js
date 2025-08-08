@@ -1,49 +1,17 @@
-import Database from "../Database/index.js";
-import { v4 as uuidv4 } from "uuid";
-
-export function enrollUserInCourse(userId, courseId) {
-  const { enrollments } = Database;
-  // Check if already enrolled
-  const existingEnrollment = enrollments.find(
-    (enrollment) => enrollment.user === userId && enrollment.course === courseId
-  );
-  if (existingEnrollment) {
-    return existingEnrollment;
-  }
-  const newEnrollment = { _id: uuidv4(), user: userId, course: courseId };
-  enrollments.push(newEnrollment);
-  return newEnrollment;
+import model from "./model.js";
+export async function findCoursesForUser(userId) {
+const enrollments = await model.find({ user: userId }).populate("course");
+return enrollments.map((enrollment) => enrollment.course);
 }
 
-export function unenrollUserFromCourse(userId, courseId) {
-  const { enrollments } = Database;
-  const index = enrollments.findIndex(
-    (enrollment) => enrollment.user === userId && enrollment.course === courseId
-  );
-  if (index > -1) {
-    return enrollments.splice(index, 1)[0];
-  }
-  return null;
+export async function findUsersForCourse(courseId) {
+const enrollments = await model.find({ course: courseId }).populate("user");
+return enrollments.map((enrollment) => enrollment.user);
 }
-
-export function findEnrollmentsForUser(userId) {
-  const { enrollments } = Database;
-  return enrollments.filter((enrollment) => enrollment.user === userId);
+export function enrollUserInCourse(user, course) {
+const newEnrollment = { user, course, _id: `${user}-${course}` };
+return model.create(newEnrollment);
 }
-
-export function findEnrollmentsForCourse(courseId) {
-  const { enrollments } = Database;
-  return enrollments.filter((enrollment) => enrollment.course === courseId);
-}
-
-export function findAllEnrollments() {
-  const { enrollments } = Database;
-  return enrollments;
-}
-
-export function findEnrollmentByUserAndCourse(userId, courseId) {
-  const { enrollments } = Database;
-  return enrollments.find(
-    (enrollment) => enrollment.user === userId && enrollment.course === courseId
-  );
+export function unenrollUserFromCourse(user, course) {
+return model.deleteOne({ user, course });
 }

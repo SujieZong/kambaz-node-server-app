@@ -1,20 +1,29 @@
 import { v4 as uuidv4 } from "uuid";
 import model from "./model.js";
+import enrollmentModel from "../Enrollments/model.js";
+
 export function deleteCourse(courseId) {
   return model.deleteOne({ _id: courseId });
 }
 export function findAllCourses() {
   return model.find();
 }
-export function findCoursesForEnrolledUser(userId) {
-  const { courses, enrollments } = Database;
-  const enrolledCourses = courses.filter((course) =>
-    enrollments.some(
-      (enrollment) =>
-        enrollment.user === userId && enrollment.course === course._id
-    )
-  );
-  return enrolledCourses;
+export async function findCoursesForEnrolledUser(userId) {
+  console.log("Looking for enrollments for user:", userId);
+  const enrollments = await enrollmentModel.find({ user: userId });
+  console.log("Found enrollments:", enrollments);
+
+  const populatedEnrollments = await enrollmentModel
+    .find({ user: userId })
+    .populate("course");
+  console.log("Populated enrollments:", populatedEnrollments);
+
+  const courses = populatedEnrollments
+    .map((enrollment) => enrollment.course)
+    .filter((course) => course !== null && course !== undefined);
+
+  console.log("Final courses:", courses);
+  return courses;
 }
 export function createCourse(course) {
   const newCourse = { ...course, _id: uuidv4() };
