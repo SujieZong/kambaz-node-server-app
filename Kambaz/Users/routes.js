@@ -142,14 +142,7 @@ export default function UserRoutes(app) {
   // Get all users enrolled in a specific course (for People screen)
   const findUsersForCourse = async (req, res) => {
     const { courseId } = req.params;
-    const enrollments = await enrollmentsDao.findEnrollmentsForCourse(courseId);
-    const userPromises = enrollments.map(async (enrollment) => {
-      const user = await dao.findUserById(enrollment.user);
-      return user;
-    });
-    const users = (await Promise.all(userPromises)).filter(
-      (user) => user !== null && user !== undefined
-    );
+    const users = await enrollmentsDao.findUsersForCourse(courseId);
     res.json(users);
   };
 
